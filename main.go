@@ -1,9 +1,9 @@
 package main
 
 import (
+	"jusodo/gopong/pong"
 	"log"
 	"os"
-	"time"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -19,10 +19,23 @@ func main() {
 		log.Fatalf("%+v", err)
 	}
 
-	defStyle := tcell.StyleDefault.Foreground(tcell.ColorWhite)
+	// set default text style
+	defStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 	screen.SetStyle(defStyle)
 
-	go Run(screen, defStyle)
+	ball := pong.Ball{
+		X:      1,
+		Y:      1,
+		Xspeed: 1,
+		Yspeed: 1,
+	}
+
+	game := pong.Game{
+		Screen: screen,
+		Ball:   ball,
+	}
+
+	go game.Run()
 
 	for {
 		switch event := screen.PollEvent().(type) {
@@ -34,22 +47,5 @@ func main() {
 				os.Exit(0)
 			}
 		}
-	}
-}
-
-func Run(screen tcell.Screen, defStyle tcell.Style) {
-
-	x := 0
-	for {
-		screen.Clear()
-
-		screen.SetContent(x, 10, 'H', nil, defStyle)
-		screen.SetContent(x+1, 10, 'i', nil, defStyle)
-		screen.SetContent(x+2, 10, '!', nil, defStyle)
-
-		screen.Show()
-		x++
-
-		time.Sleep(40 * time.Millisecond)
 	}
 }
